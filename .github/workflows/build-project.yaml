@@ -122,7 +122,8 @@ jobs:
 
       - name: Set Up Codesigning 🔑
         uses: ./.github/actions/setup-macos-codesigning
-        if: fromJSON(needs.check-event.outputs.codesign) && secrets.APPLE_CODESIGN_IDENTITY != ''
+        if: fromJSON(needs.check-event.outputs.codesign)
+        continue-on-error: true
         id: codesign
         with:
           codesignIdentity: ${{ secrets.APPLE_CODESIGN_IDENTITY }}
@@ -285,17 +286,23 @@ jobs:
           config: ${{ needs.check-event.outputs.config }}
 
       - name: Create Code Signing Certificate
-        if: success() && github.event_name != 'pull_request' && secrets.WINDOWS_CSC_LINK != ''
+        if: success() && github.event_name != 'pull_request'
         continue-on-error: true
+        env:
+          CSC: ${{ secrets.WINDOWS_CSC_LINK }}
         run: |
+            if (-not $env:CSC) { Write-Host "No cert secret, skipping"; exit 0 }
             New-Item -ItemType directory -Path certificate
-            Set-Content -Path certificate\certificate.txt -Value '${{ secrets.WINDOWS_CSC_LINK }}'
+            Set-Content -Path certificate\certificate.txt -Value $env:CSC
             certutil -decode certificate\certificate.txt certificate\certificate.pfx
 
       - name: Code Sign 64
-        if: success() && github.event_name != 'pull_request' && secrets.WINDOWS_CSC_LINK != ''
+        if: success() && github.event_name != 'pull_request'
         continue-on-error: true
+        env:
+          CSC: ${{ secrets.WINDOWS_CSC_LINK }}
         run: |
+          if (-not $env:CSC) { Write-Host "No cert secret, skipping"; exit 0 }
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/signtool.exe' sign /fd SHA256 /f certificate\certificate.pfx /p '${{ secrets.WINDOWS_CSC_PASS }}' /t http://timestamp.comodoca.com/authenticode .\release\${{ needs.check-event.outputs.config }}\${{ steps.setup.outputs.pluginName }}\bin\64bit\${{ steps.setup.outputs.pluginName }}.dll
 
       - name: Package Plugin 📀
@@ -308,9 +315,12 @@ jobs:
           package: ${{ fromJSON(needs.check-event.outputs.package) }}
 
       - name: Code Sign Installer
-        if: success() && github.event_name != 'pull_request' && secrets.WINDOWS_CSC_LINK != ''
+        if: success() && github.event_name != 'pull_request'
         continue-on-error: true
+        env:
+          CSC: ${{ secrets.WINDOWS_CSC_LINK }}
         run: |
+          if (-not $env:CSC) { Write-Host "No cert secret, skipping"; exit 0 }
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/signtool.exe' sign /fd SHA256 /f certificate\certificate.pfx /p '${{ secrets.WINDOWS_CSC_PASS }}' /t http://timestamp.comodoca.com/authenticode ./release/${{ steps.setup.outputs.pluginName }}-${{ steps.setup.outputs.pluginVersion }}-windows-x64-Installer.exe
 
       - name: Upload Artifacts 📡
