@@ -363,13 +363,15 @@ OutputDialog::OutputDialog(QDialog *parent, QString name, QString server, QStrin
 		layout->addWidget(WizardInfoTwitch(true));
 	} else if (outputServer.contains(QString::fromUtf8(".youtube.com"))) { // youtube
 		layout->addWidget(WizardInfoYouTube(true));
-	} else if (outputServer.contains(QString::fromUtf8("fa723fc1b171.global-contribute.live-video.net"))) { // kick
+	} else if (outputServer.contains(QString::fromUtf8("fa723fc1b171.global-contribute.live-video.net")) ||
+		   outputServer.contains(QString::fromUtf8("kick"))) { // kick
 		layout->addWidget(WizardInfoKick(true));
 	} else if (outputServer.contains(QString::fromUtf8(".tiktokcdn-"))) { // tiktok
 		layout->addWidget(WizardInfoTikTok(true));
 	} else if (outputServer.contains(QString::fromUtf8(".pscp.tv"))) { // twitter
 		layout->addWidget(WizardInfoTwitter(true));
-	} else if (outputServer.contains(QString::fromUtf8("livepush.trovo.live"))) { // trovo
+	} else if (outputServer.contains(QString::fromUtf8("livepush.trovo.live")) ||
+		   outputServer.contains(QString::fromUtf8("trovo"))) { // trovo
 		layout->addWidget(WizardInfoTrovo(true));
 	} else if (outputServer.contains(QString::fromUtf8(".fbcdn.net")) ||
 		   outputServer.contains(QString::fromUtf8(".facebook.com"))) { // facebook
@@ -468,8 +470,9 @@ QWidget *OutputDialog::WizardInfoKick(bool edit)
 	formLayout->addRow(generateFormLabel("OutputName"), outputNameField);
 
 	// Server field
-	auto serverSelection = generateOutputServerField(confirmButton, true, edit);
-	serverSelection->setText("rtmps://fa723fc1b171.global-contribute.live-video.net");
+	auto serverSelection = generateOutputServerField(confirmButton, false, edit);
+	if (!edit)
+		serverSelection->setText("rtmps://fa723fc1b171.global-contribute.live-video.net");
 	formLayout->addRow(generateFormLabel("KickServer"), serverSelection);
 
 	// Server info
@@ -875,8 +878,9 @@ QWidget *OutputDialog::WizardInfoTrovo(bool edit)
 	formLayout->addRow(generateFormLabel("OutputName"), outputNameField);
 
 	// Server field
-	auto serverSelection = generateOutputServerField(confirmButton, true, edit);
-	serverSelection->setText("rtmp://livepush.trovo.live/live/");
+	auto serverSelection = generateOutputServerField(confirmButton, false, edit);
+	if (!edit)
+		serverSelection->setText("rtmp://livepush.trovo.live/live/");
 
 	formLayout->addRow(generateFormLabel("TrovoServer"), serverSelection);
 

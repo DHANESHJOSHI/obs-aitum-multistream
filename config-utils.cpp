@@ -85,13 +85,15 @@ QIcon ConfigUtils::getPlatformIconFromEndpoint(QString endpoint)
 		return QIcon(":/aitum/media/twitch.png");
 	} else if (endpoint.contains(QString::fromUtf8(".youtube.com"))) { // youtube
 		return QIcon(":/aitum/media/youtube.png");
-	} else if (endpoint.contains(QString::fromUtf8("fa723fc1b171.global-contribute.live-video.net"))) { // kick
+	} else if (endpoint.contains(QString::fromUtf8("fa723fc1b171.global-contribute.live-video.net")) ||
+		   endpoint.contains(QString::fromUtf8("kick"))) { // kick
 		return QIcon(":/aitum/media/kick.png");
 	} else if (endpoint.contains(QString::fromUtf8(".tiktokcdn"))) { // tiktok
 		return QIcon(":/aitum/media/tiktok.png");
 	} else if (endpoint.contains(QString::fromUtf8(".pscp.tv"))) { // twitter
 		return QIcon(":/aitum/media/twitter.png");
-	} else if (endpoint.contains(QString::fromUtf8("livepush.trovo.live"))) { // trovo
+	} else if (endpoint.contains(QString::fromUtf8("livepush.trovo.live")) ||
+		   endpoint.contains(QString::fromUtf8("trovo"))) { // trovo
 		return QIcon(":/aitum/media/trovo.png");
 	} else if (endpoint.contains(QString::fromUtf8(".facebook.com")) ||
 		   endpoint.contains(QString::fromUtf8(".fbcdn.net"))) { // facebook
